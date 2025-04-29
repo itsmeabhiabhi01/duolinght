@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HappyTalk - Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .language-card {
+            transition: transform 0.3s ease;
+        }
+        .language-card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-green-50">
+    <!-- Header -->
+    <header class="bg-green-600 text-white py-4">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-3xl font-bold">HappyTalk</h1>
+            <div class="flex items-center space-x-4">
+                <span id="streak" class="text-lg">🔥 Streak: 0 days</span>
+                <span id="points" class="text-lg">💎 Points: 0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Welcome Section -->
+    <main class="container mx-auto py-16 px-4 text-center">
+        <h2 class="text-5xl font-bold text-green-800 mb-6">Welcome to HappyTalk!</h2>
+        <p class="text-xl text-gray-700 mb-12">Pick a language and start learning today!</p>
+        
+        <!-- Language Selection -->
+        <h3 class="text-3xl font-semibold text-green-700 mb-8">Choose Your Language</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <a href="#english-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">English</h4>
+            </a>
+            <a href="#spanish-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Spanish</h4>
+            </a>
+            <a href="#french-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">French</h4>
+            </a>
+            <a href="#german-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">German</h4>
+            </a>
+            <a href="#italian-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Italian</h4>
+            </a>
+            <a href="#russian-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Russian</h4>
+            </a>
+            <a href="#portuguese-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Portuguese</h4>
+            </a>
+            <a href="#chinese-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Chinese</h4>
+            </a>
+            <a href="#arabic-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Arabic</h4>
+            </a>
+            <a href="#hindi-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Hindi</h4>
+            </a>
+            <a href="#japanese-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Japanese</h4>
+            </a>
+            <a href="#korean-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Korean</h4>
+            </a>
+            <a href="#dutch-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Dutch</h4>
+            </a>
+            <a href="#turkish-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Turkish</h4>
+            </a>
+            <a href="#thai-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Thai</h4>
+            </a>
+            <a href="#vietnamese-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Vietnamese</h4>
+            </a>
+            <a href="#indonesian-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Indonesian</h4>
+            </a>
+            <a href="#tamil-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Tamil</h4>
+            </a>
+            <a href="#malayalam-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Malayalam</h4>
+            </a>
+            <a href="#telugu-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Telugu</h4>
+            </a>
+            <a href="#kannada-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Kannada</h4>
+            </a>
+            <a href="#bengali-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Bengali</h4>
+            </a>
+            <a href="#punjabi-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Punjabi</h4>
+            </a>
+            <a href="#urdu-levels" class="language-card bg-white rounded-lg shadow-lg p-6 text-center">
+                <h4 class="text-xl font-semibold">Urdu</h4>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 HappyTalk. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Streak and Points -->
+    <script>
+        // Initialize streak and points from localStorage or set to 0
+        let streak = localStorage.getItem('streak') ? parseInt(localStorage.getItem('streak')) : 0;
+        let points = localStorage.getItem('points') ? parseInt(localStorage.getItem('points')) : 0;
+
+        // Update display
+        document.getElementById('streak').textContent = `🔥 Streak: ${streak} days`;
+        document.getElementById('points').textContent = `💎 Points: ${points}`;
+
+        // Streak logic: Check if last visit was yesterday
+        const today = new Date().toDateString();
+        const lastVisit = localStorage.getItem('lastVisit');
+
+        if (lastVisit !== today) {
+            if (lastVisit) {
+                const lastDate = new Date(lastVisit);
+                const currentDate = new Date(today);
+                const diffDays = (currentDate - lastDate) / (1000 * 60 * 60 * 24);
+                if (diffDays === 1) {
+                    streak += 1; // Increment streak for consecutive days
+                } else if (diffDays > 1) {
+                    streak = 1; // Reset streak if missed a day
+                }
+            } else {
+                streak = 1; // First visit
+            }
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastVisit', today);
+            document.getElementById('streak').textContent = `🔥 Streak: ${streak} days`;
+        }
+    </script>
