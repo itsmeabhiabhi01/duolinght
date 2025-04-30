@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HappyTalk - Advanced English</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        background-color: #f0fdf4;
+        /* Light green-50 background */
+        color: #1a2e05;
+            /* Dark green-900 text */
+        }
+        .level-card, .answer-button {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .level-card:hover, .answer-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .correct {
+            background-color: #34D399 !important;
+            color: white !important;
+        }
+        .incorrect {
+            background-color: #F87171 !important;
+            color: white !important;
+        }
+        .back-button {
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            transform: translateX(-3px);
+            opacity: 0.9;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            /* Green-600 to Green-700 gradient */
+        }
+        .level-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%);
+            border: 1px solid #d1fae5;
+            /* Green-100 border */
+        }
+    </style>
+</head>
+<body class="bg-green-50">
+    <!-- Header -->
+    <header class="header-gradient text-white py-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-bold">HappyTalk - Advanced English</h1>
+            <div class="flex items-center space-x-6">
+                <span id="streak" class="text-lg bg-green-800 bg-opacity-30 px-3 py-1 rounded-full">🔥 Streak: 0 days</span>
+                <span id="points" class="text-lg bg-green-800 bg-opacity-30 px-3 py-1 rounded-full">💎 Points: 0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-12 px-4 max-w-6xl">
+        <!-- Levels Section -->
+        <section id="levels-section" class="text-center">
+            <h2 class="text-4xl font-bold text-green-900 mb-12">Advanced English Mastery</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="level-card rounded-xl shadow-xl p-8 text-center cursor-pointer transform hover:-translate-y-2"
+                    onclick="startLevel(5)">
+                    <div class="bg-green-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <span class="text-3xl font-bold text-green-800">5</span>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-green-800">Expert Level</h3>
+                    <p class="text-gray-600 mt-2">25 challenging questions</p>
+                    <p class="text-sm text-green-600 mt-4 font-medium">For advanced learners</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section (Hidden Initially) -->
+        <section id="quiz-section" class="hidden">
+            <div class="flex justify-start mb-6">
+                <button onclick="backToLevels()"
+                    class="back-button flex items-center text-green-700 font-semibold hover:text-green-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Back to Levels
+                </button>
+            </div>
+            <div class="text-center mb-12">
+                <h2 id="level-title" class="text-4xl font-bold text-green-900 mb-4"></h2>
+                <div class="w-full bg-green-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            <div id="question-container" class="bg-white rounded-xl shadow-xl p-8 mb-8">
+                <h3 id="question-text" class="text-2xl font-semibold mb-8 text-center"></h3>
+                <div id="answers" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+            </div>
+            <div class="flex justify-between items-center">
+                <p id="progress" class="text-lg text-gray-700"></p>
+                <button id="next-button"
+                    class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg hidden transform hover:scale-105 transition-transform">
+                    Next Question
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="container mx-auto text-center">
+            <p class="mb-2">© 2025 HappyTalk Advanced English. All rights reserved.</p>
+            <p class="text-gray-400 text-sm">Challenge your English mastery with our expert-level questions</p>
+        </div>
+    </footer>
+
+    <script>
+        // Streak and Points Logic
+        let streak = localStorage.getItem('streak') ? parseInt(localStorage.getItem('streak')) : 0;
+        let points = localStorage.getItem('points') ? parseInt(localStorage.getItem('points')) : 0;
+        document.getElementById('streak').textContent = `🔥 Streak: ${streak} days`;
+        document.getElementById('points').textContent = `💎 Points: ${points}`;
+
+        const today = new Date().toDateString();
+        const lastVisit = localStorage.getItem('lastVisit');
+        if (lastVisit !== today) {
+            if (lastVisit) {
+                const lastDate = new Date(lastVisit);
+                const currentDate = new Date(today);
+                const diffDays = (currentDate - lastDate) / (1000 * 60 * 60 * 24);
+                if (diffDays === 1) {
+                    streak += 1;
+                } else if (diffDays > 1) {
+                    streak = 1;
+                }
+            } else {
+                streak = 1;
+            }
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastVisit', today);
+            document.getElementById('streak').textContent = `🔥 Streak: ${streak} days`;
+        }
+
+        // Questions for level 5 (25 expert questions)
+        const level5Questions = [
+            {
+                question: "Which sentence demonstrates the correct use of the past perfect progressive tense?",
+                answers: [
+                    "She had been working there for five years before she got promoted",
+                    "She was working there for five years before she got promoted",
+                    "She worked there for five years before she got promoted",
+                    "She had worked there for five years before she got promoted"
+                ],
+                correct: "She had been working there for five years before she got promoted"
+            },
+            {
+                question: "Identify the sentence with the correct use of a fronted participle phrase:",
+                answers: [
+                    "Walking down the street, the trees were beautiful",
+                    "Walking down the street, I admired the beautiful trees",
+                    "I walked down the street, admiring the beautiful trees",
+                    "The trees were beautiful walking down the street"
+                ],
+                correct: "Walking down the street, I admired the beautiful trees"
+            },
+            {
+                question: "Which sentence correctly uses a double comparative structure?",
+                answers: [
+                    "The more I study, the more I understand",
+                    "The most I study, the most I understand",
+                    "The more I study, the most I understand",
+                    "The most I study, the more I understand"
+                ],
+                correct: "The more I study, the more I understand"
+            },
+            {
+                question: "Choose the sentence that properly uses the subjunctive mood for a hypothetical situation:",
+                answers: [
+                    "If I was you, I would reconsider that decision",
+                    "If I were you, I would reconsider that decision",
+                    "If I am you, I would reconsider that decision",
+                    "If I would be you, I would reconsider that decision"
+                ],
+                correct: "If I were you, I would reconsider that decision"
+            },
+            {
+                question: "Which sentence demonstrates the correct use of an inverted conditional without 'if'?",
+                answers: [
+                    "Were I you, I would accept the offer",
+                    "Was I you, I would accept the offer",
+                    "If I was you, I would accept the offer",
+                    "If were I you, I would accept the offer"
+                ],
+                correct: "Were I you, I would accept the offer"
+            },
+            {
+                question: "Identify the correct passive transformation of: 'People believe that the company is developing a revolutionary product.'",
+                answers: [
+                    "The company is believed to be developing a revolutionary product",
+                    "It is believed that the company is developing a revolutionary product",
+                    "A revolutionary product is believed to be developed by the company",
+                    "Both first and second options are correct"
+                ],
+                correct: "Both first and second options are correct"
+            },
+            {
+                question: "Which sentence properly uses a cleft structure for emphasis?",
+                answers: [
+                    "What surprised me was his complete lack of interest",
+                    "It was his complete lack of interest that surprised me",
+                    "His complete lack of interest was what surprised me",
+                    "All of the above are correct"
+                ],
+                correct: "All of the above are correct"
+            },
+            {
+                question: "Choose the correct sentence with a reduced adverb clause:",
+                answers: [
+                    "While walking to work, my phone rang",
+                    "While I was walking to work, my phone rang",
+                    "Walking to work, my phone rang",
+                    "Both first and second options are correct"
+                ],
+                correct: "While walking to work, my phone rang"
+            },
+            {
+                question: "Which sentence demonstrates the correct use of 'need' as a modal verb?",
+                answers: [
+                    "You need not to worry about the results",
+                    "You needn't worry about the results",
+                    "You don't need worry about the results",
+                    "You need not worry about the results"
+                ],
+                correct: "You needn't worry about the results"
+            },
+            {
+                question: "Identify the sentence with proper use of a correlative conjunction:",
+                answers: [
+                    "Not only she speaks French but also Italian",
+                    "She speaks not only French but also Italian",
+                    "She not only speaks French but also Italian",
+                    "Both second and third options are correct"
+                ],
+                correct: "Both second and third options are correct"
+            },
+            {
+                question: "Which sentence correctly uses a past unreal conditional?",
+                answers: [
+                    "If I had known about the traffic, I would leave earlier",
+                    "If I knew about the traffic, I would have left earlier",
+                    "If I had known about the traffic, I would have left earlier",
+                    "If I would have known about the traffic, I had left earlier"
+                ],
+                correct: "If I had known about the traffic, I would have left earlier"
+            },
+            {
+                question: "Choose the sentence with proper subject-verb agreement with collective nouns:",
+                answers: [
+                    "The committee are divided in their opinions",
+                    "The committee is divided in its opinion",
+                    "The committee are divided in its opinion",
+                    "Both first and second options are correct depending on context"
+                ],
+                correct: "Both first and second options are correct depending on context"
+            },
+            {
+                question: "Which sentence demonstrates the correct use of 'as' versus 'like'?",
+                answers: [
+                    "She works like a teacher does",
+                    "She works as a teacher",
+                    "She works like a teacher",
+                    "Both second and third options are correct but with different meanings"
+                ],
+                correct: "Both second and third options are correct but with different meanings"
+            },
+            {
+                question: "Identify the correct use of ellipsis in coordinated clauses:",
+                answers: [
+                    "John can play the guitar and Mary can play the violin",
+                    "John can play the guitar and Mary the violin",
+                    "John can play the guitar and Mary can the violin",
+                    "All are grammatically correct"
+                ],
+                correct: "All are grammatically correct"
+            },
+            {
+                question: "Which sentence properly uses a dangling modifier?",
+                answers: [
+                    "None - dangling modifiers are always incorrect",
+                    "Having finished the assignment, the TV was turned on",
+                    "Walking to the store, the rain began to fall",
+                    "After completing the work, the reward was deserved"
+                ],
+                correct: "None - dangling modifiers are always incorrect"
+            },
+            {
+                question: "Choose the correct sentence with a non-restrictive relative clause:",
+                answers: [
+                    "My brother who lives in Chicago is visiting next week",
+                    "My brother, who lives in Chicago, is visiting next week",
+                    "My brother that lives in Chicago is visiting next week",
+                    "My brother which lives in Chicago is visiting next week"
+                ],
+                correct: "My brother, who lives in Chicago, is visiting next week"
+            },
+            {
+                question: "Which sentence demonstrates proper use of the future perfect continuous tense?",
+                answers: [
+                    "By next year, I will be working here for a decade",
+                    "By next year, I will have been working here for a decade",
+                    "By next year, I will have worked here for a decade",
+                    "By next year, I am working here for a decade"
+                ],
+                correct: "By next year, I will have been working here for a decade"
+            },
+            {
+                question: "Identify the correct use of 'whose' with inanimate objects:",
+                answers: [
+                    "The house whose roof was damaged is being repaired",
+                    "The house that's roof was damaged is being repaired",
+                    "The house which roof was damaged is being repaired",
+                    "The house of which the roof was damaged is being repaired"
+                ],
+                correct: "The house whose roof was damaged is being repaired"
+            },
+            {
+                question: "Which sentence properly uses a concessive clause with inversion?",
+                answers: [
+                    "As hard as he tried, he couldn't solve the problem",
+                    "Hard as he tried, he couldn't solve the problem",
+                    "Though he tried hard, he couldn't solve the problem",
+                    "All are correct but with different structures"
+                ],
+                correct: "All are correct but with different structures"
+            },
+            {
+                question: "Choose the correct sentence with a postmodifying participle phrase:",
+                answers: [
+                    "The man running down the street was late for work",
+                    "The man who running down the street was late for work",
+                    "The man was running down the street late for work",
+                    "Running down the street, the man was late for work"
+                ],
+                correct: "The man running down the street was late for work"
+            },
+            {
+                question: "Which sentence demonstrates proper use of the past subjunctive?",
+                answers: [
+                    "I wish I was taller",
+                    "I wish I were taller",
+                    "I wished I was taller",
+                    "Both first and second options are acceptable in modern English"
+                ],
+                correct: "Both first and second options are acceptable in modern English"
+            },
+            {
+                question: "Identify the correct use of 'need' with a passive infinitive:",
+                answers: [
+                    "This carpet needs to be cleaned",
+                    "This carpet needs cleaning",
+                    "This carpet needs to clean",
+                    "Both first and second options are correct"
+                ],
+                correct: "Both first and second options are correct"
+            },
+            {
+                question: "Which sentence properly uses a catenative verb construction?",
+                answers: [
+                    "She seems to have been working hard",
+                    "She seems to be working hard",
+                    "She seems working hard",
+                    "Both first and second options are correct"
+                ],
+                correct: "Both first and second options are correct"
+            },
+            {
+                question: "Choose the correct sentence with a fronted negative adverbial:",
+                answers: [
+                    "Never I have seen such a beautiful sunset",
+                    "Never have I seen such a beautiful sunset",
+                    "Never I seen have such a beautiful sunset",
+                    "Never seen I have such a beautiful sunset"
+                ],
+                correct: "Never have I seen such a beautiful sunset"
+            },
+            {
+                question: "Which sentence demonstrates proper use of a gerund after a preposition?",
+                answers: [
+                    "She succeeded in to finish the project on time",
+                    "She succeeded in finishing the project on time",
+                    "She succeeded to finish the project on time",
+                    "She succeeded finishing the project on time"
+                ],
+                correct: "She succeeded in finishing the project on time"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let currentLevel = 5;
+        let currentQuestions = [];
+
+        function startLevel(level) {
+            currentLevel = level;
+            currentQuestions = level5Questions;
+            
+            document.getElementById('levels-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.remove('hidden');
+            document.getElementById('level-title').textContent = `Expert English - Level 5`;
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            updateProgressBar();
+            showQuestion();
+        }
+
+        function backToLevels() {
+            if (confirm("Are you sure you want to go back? Your progress will be lost.")) {
+                document.getElementById('levels-section').classList.remove('hidden');
+                document.getElementById('quiz-section').classList.add('hidden');
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = (currentQuestionIndex / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        function showQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.className = 'answer-button bg-green-100 hover:bg-green-200 text-green-800 px-6 py-4 rounded-lg text-left transition-colors duration-200';
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(answer, question.correct);
+                answersDiv.appendChild(button);
+            });
+            
+            document.getElementById('progress').textContent = `Question ${currentQuestionIndex + 1} of ${currentQuestions.length}`;
+            document.getElementById('next-button').classList.add('hidden');
+            updateProgressBar();
+        }
+
+        function checkAnswer(selected, correct) {
+            const buttons = document.querySelectorAll('.answer-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correct) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selected && selected !== correct) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            if (selected === correct) {
+                correctAnswers++;
+                points += 15; // More points for harder level
+                localStorage.setItem('points', points);
+                document.getElementById('points').textContent = `💎 Points: ${points}`;
+            }
+            
+            document.getElementById('next-button').classList.remove('hidden');
+        }
+
+        document.getElementById('next-button').onclick = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                const percentage = Math.round((correctAnswers / currentQuestions.length) * 100);
+                let message;
+                if (percentage >= 90) {
+                    message = "🏆 Outstanding! You're an English expert!";
+                } else if (percentage >= 70) {
+                    message = "🎉 Excellent work! You've mastered advanced English!";
+                } else if (percentage >= 50) {
+                    message = "👍 Good job! You're well on your way to mastery!";
+                } else {
+                    message = "💪 Keep practicing! Advanced English takes time!";
+                }
+
+                document.getElementById('question-container').innerHTML = `
+                    <div class="text-center py-12">
+                        <h3 class="text-3xl font-bold text-green-800 mb-6">Expert Level Completed!</h3>
+                        <div class="text-5xl mb-6">${percentage}%</div>
+                        <p class="text-xl mb-8">${message}</p>
+                        <p class="text-lg text-gray-700 mb-8">You answered ${correctAnswers} out of ${currentQuestions.length} questions correctly.</p>
+                        <div class="flex justify-center gap-4">
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg transform hover:scale-105 transition-transform"
+                                onclick="restart()">
+                                Back to Levels
+                            </button>
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transform hover:scale-105 transition-transform"
+                                onclick="startLevel(5)">
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('progress').textContent = '';
+                document.getElementById('next-button').classList.add('hidden');
+            }
+        };
+
+        function restart() {
+            document.getElementById('levels-section').classList.remove('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
