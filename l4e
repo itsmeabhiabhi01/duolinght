@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HappyTalk - English Levels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .level-card, .answer-button {
+            transition: transform 0.3s ease;
+        }
+        .level-card:hover, .answer-button:hover {
+            transform: scale(1.05);
+        }
+        .correct {
+            background-color: #34D399 !important;
+        }
+        .incorrect {
+            background-color: #F87171 !important;
+        }
+        .back-button {
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            transform: translateX(-3px);
+        }
+    </style>
+</head>
+<body class="bg-green-50">
+    <!-- Header -->
+    <header class="bg-green-600 text-white py-4">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-3xl font-bold">HappyTalk - English</h1>
+            <div class="flex items-center space-x-4">
+                <span id="streak" class="text-lg">🔥 Streak: 0 days</span>
+                <span id="points" class="text-lg">💎 Points: 0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-16 px-4">
+        <!-- Levels Section -->
+        <section id="levels-section" class="text-center">
+            <h2 class="text-4xl font-bold text-green-800 mb-8">English Levels</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="level-card bg-white rounded-lg shadow-lg p-6 text-center cursor-pointer" onclick="startLevel(4)">
+                    <h3 class="text-2xl font-semibold">Advanced English</h3>
+                    <p class="text-gray-600">Level 4</p>
+                    <p class="text-sm text-green-600 mt-2">Mastering fluency</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section (Hidden Initially) -->
+        <section id="quiz-section" class="hidden text-center">
+            <div class="flex justify-start mb-4">
+                <button onclick="backToLevels()" class="back-button flex items-center text-green-600 font-semibold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Levels
+                </button>
+            </div>
+            <h2 id="level-title" class="text-4xl font-bold text-green-800 mb-8"></h2>
+            <div id="question-container" class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <h3 id="question-text" class="text-2xl font-semibold mb-6"></h3>
+                <div id="answers" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            </div>
+            <p id="progress" class="text-lg text-gray-700 mb-4"></p>
+            <button id="next-button" class="bg-green-600 text-white px-6 py-3 rounded-lg hidden">Next Question</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 HappyTalk. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Streak and Points Logic
+        let streak = localStorage.getItem('streak') ? parseInt(localStorage.getItem('streak')) : 0;
+        let points = localStorage.getItem('points') ? parseInt(localStorage.getItem('points')) : 0;
+        document.getElementById('streak').textContent = `🔥 Streak: ${streak} days`;
+        document.getElementById('points').textContent = `💎 Points: ${points}`;
+
+        const today = new Date().toDateString();
+        const lastVisit = localStorage.getItem('lastVisit');
+        if (lastVisit !== today) {
+            if (lastVisit) {
+                const lastDate = new Date(lastVisit);
+                const currentDate = new Date(today);
+                const diffDays = (currentDate - lastDate) / (1000 * 60 * 60 * 24);
+                if (diffDays === 1) {
+                    streak += 1;
+                } else if (diffDays > 1) {
+                    streak = 1;
+                }
+            } else {
+                streak = 1;
+            }
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastVisit', today);
+            document.getElementById('streak').textContent = `🔥 Streak: ${streak} days`;
+        }
+
+        // Questions for level 4
+        const level4Questions = [
+            {
+                question: "Which sentence uses the present perfect continuous correctly?",
+                answers: ["I have been working here since 2010", "I am working here since 2010", "I work here since 2010", "I was working here since 2010"],
+                correct: "I have been working here since 2010"
+            },
+            {
+                question: "Choose the correct mixed conditional: 'If I ___ harder, I ___ the promotion.'",
+                answers: ["worked/would get", "had worked/would have gotten", "had worked/would get", "work/will get"],
+                correct: "had worked/would get"
+            },
+            {
+                question: "Which sentence correctly uses inversion for emphasis?",
+                answers: ["Never I have seen such beauty", "Never have I seen such beauty", "Never I seen have such beauty", "Never seen I have such beauty"],
+                correct: "Never have I seen such beauty"
+            },
+            {
+                question: "Identify the correct participle clause: '___ the museum, we went for lunch.'",
+                answers: ["Visiting", "Having visited", "Being visited", "To visit"],
+                correct: "Having visited"
+            },
+            {
+                question: "Which phrasal verb means 'to postpone'?",
+                answers: ["Put up with", "Put off", "Put away", "Put through"],
+                correct: "Put off"
+            },
+            {
+                question: "Choose the correct cleft sentence: '___ was the food that was delicious.'",
+                answers: ["It", "What", "There", "That"],
+                correct: "It"
+            },
+            {
+                question: "Which sentence uses the subjunctive mood correctly?",
+                answers: ["I suggest that he goes now", "I suggest that he go now", "I suggest that he will go now", "I suggest that he went now"],
+                correct: "I suggest that he go now"
+            },
+            {
+                question: "Complete the third conditional: 'If you ___ me, I ___ you.'",
+                answers: ["had called/would help", "called/would have helped", "had called/would have helped", "would have called/had helped"],
+                correct: "had called/would have helped"
+            },
+            {
+                question: "Which is the correct reporting of this question: 'Where did you go?'",
+                answers: ["He asked where did I go", "He asked where I had gone", "He asked where I went", "He asked where had I gone"],
+                correct: "He asked where I had gone"
+            },
+            {
+                question: "Identify the correct use of 'used to' vs 'be used to': 'I ___ living in cold weather now.'",
+                answers: ["used to", "am used to", "use to", "was used to"],
+                correct: "am used to"
+            },
+            {
+                question: "Which sentence demonstrates correct adverb placement?",
+                answers: ["She quickly ran to the store", "She ran quickly to the store", "Quickly she ran to the store", "All are correct"],
+                correct: "All are correct"
+            },
+            {
+                question: "Choose the correct quantifier: 'There's ___ milk in the fridge if you want some.'",
+                answers: ["a few", "a little", "many", "few"],
+                correct: "a little"
+            },
+            {
+                question: "Which sentence contains a dangling modifier?",
+                answers: ["Running down the street, my hat flew off", "As I ran down the street, my hat flew off", "My hat flew off as I ran down the street", "While running down the street, I lost my hat"],
+                correct: "Running down the street, my hat flew off"
+            },
+            {
+                question: "Identify the correct passive form: 'They believe the suspect is hiding in the forest.'",
+                answers: ["The suspect is believed to be hiding in the forest", "It is believed the suspect is hiding in the forest", "The suspect is believed hiding in the forest", "Both first and second options are correct"],
+                correct: "Both first and second options are correct"
+            },
+            {
+                question: "Which sentence correctly uses 'wish' for present regret?",
+                answers: ["I wish I have studied more", "I wish I studied more", "I wish I had studied more", "I wish I would study more"],
+                correct: "I wish I had studied more"
+            },
+            {
+                question: "Which sentence uses the future perfect correctly?",
+                answers: ["By next month, I will finish my course", "By next month, I will have finished my course", "By next month, I will be finishing my course", "By next month, I finish my course"],
+                correct: "By next month, I will have finished my course"
+            },
+            {
+                question: "Choose the correct reduced relative clause: 'The man ___ at the cafe is my uncle.'",
+                answers: ["who is sitting", "sitting", "is sitting", "who sits"],
+                correct: "sitting"
+            },
+            {
+                question: "Which sentence correctly uses a non-defining relative clause?",
+                answers: ["My brother who lives in Paris is visiting", "My brother, who lives in Paris, is visiting", "My brother that lives in Paris is visiting", "My brother lives in Paris who is visiting"],
+                correct: "My brother, who lives in Paris, is visiting"
+            },
+            {
+                question: "Identify the correct use of 'so' vs 'such': 'It was ___ cold that the lake froze.'",
+                answers: ["so", "such", "such a", "so a"],
+                correct: "so"
+            },
+            {
+                question: "Which sentence correctly uses ellipsis?",
+                answers: ["She can play the piano and the violin", "She can play the piano and she can play the violin", "She can play the piano and the violin too", "She can play the piano and also the violin"],
+                correct: "She can play the piano and the violin"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let currentLevel = 4;
+        let currentQuestions = [];
+
+        function startLevel(level) {
+            currentLevel = level;
+            currentQuestions = level4Questions;
+                
+            document.getElementById('levels-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.remove('hidden');
+            document.getElementById('level-title').textContent = `Advanced English - Level 4`;
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            showQuestion();
+        }
+
+        function backToLevels() {
+            if (confirm("Are you sure you want to go back? Your progress in this level will be lost.")) {
+                document.getElementById('levels-section').classList.remove('hidden');
+                document.getElementById('quiz-section').classList.add('hidden');
+            }
+        }
+
+        function showQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.className = 'answer-button bg-green-100 text-green-800 px-4 py-2 rounded-lg w-full';
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(answer, question.correct);
+                answersDiv.appendChild(button);
+            });
+            document.getElementById('progress').textContent = `Question ${currentQuestionIndex + 1} of ${currentQuestions.length}`;
+            document.getElementById('next-button').classList.add('hidden');
+        }
+
+        function checkAnswer(selected, correct) {
+            const buttons = document.querySelectorAll('.answer-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correct) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selected && selected !== correct) {
+                    button.classList.add('incorrect');
+                }
+            });
+            if (selected === correct) {
+                correctAnswers++;
+                points += 10;
+                localStorage.setItem('points', points);
+                document.getElementById('points').textContent = `💎 Points: ${points}`;
+            }
+            document.getElementById('next-button').classList.remove('hidden');
+        }
+
+        document.getElementById('next-button').onclick = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                document.getElementById('question-container').innerHTML = `
+                    <h3 class="text-2xl font-semibold mb-6">Advanced Level Completed!</h3>
+                    <p class="text-lg text-gray-700">You got ${correctAnswers} out of ${currentQuestions.length} correct!</p>
+                    <div class="flex justify-center">
+                        <button class="bg-green-600 text-white px-6 py-3 rounded-lg" onclick="restart()">Back to Levels</button>
+                    </div>
+                `;
+                document.getElementById('progress').textContent = '';
+                document.getElementById('next-button').classList.add('hidden');
+            }
+        };
+
+        function restart() {
+            document.getElementById('levels-section').classList.remove('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
