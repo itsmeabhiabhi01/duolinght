@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HappyTalk - Expert Level English</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0fdfa;
+        }
+        .level-card {
+            background: linear-gradient(145deg, #ffffff 0%, #ecfdfb 100%);
+            border: 2px solid #14b8a6;
+            transition: all 0.3s ease;
+        }
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: #0d9488;
+        }
+        .answer-button {
+            transition: all 0.2s ease;
+        }
+        .answer-button:hover:not(.selected) {
+            transform: scale(1.02);
+            background-color: #ccfbf1;
+        }
+        .correct {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+        .incorrect {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+        .selected {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 2px #0d9488;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #0d9488 0%, #047857 100%);
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .difficulty-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #f59e0b;
+            color: white;
+            border-radius: 9999px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-teal-50">
+    <!-- Header -->
+    <header class="header-gradient text-white py-6 shadow-xl">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-bold">HappyTalk - Expert Level</h1>
+            <div class="flex items-center space-x-6">
+                <span id="streak" class="text-lg bg-teal-800 bg-opacity-30 px-4 py-2 rounded-full">🔥 Streak: 0</span>
+                <span id="points" class="text-lg bg-teal-800 bg-opacity-30 px-4 py-2 rounded-full">💎 Points: 0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-12 px-4 max-w-6xl">
+        <!-- Levels Section -->
+        <section id="levels-section" class="text-center">
+            <h2 class="text-4xl font-bold text-teal-900 mb-12">Expert Level Challenges</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="level-card relative rounded-xl shadow-lg p-8 text-center cursor-pointer" onclick="startLevel(7)">
+                    <div class="difficulty-badge">7</div>
+                    <div class="w-24 h-24 mx-auto mb-6 flex items-center justify-center text-4xl font-bold text-teal-800 bg-teal-100 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-teal-800">Expert Level</h3>
+                    <p class="text-gray-600 mt-2">35 master questions</p>
+                    <div class="mt-6">
+                        <span class="inline-block bg-teal-100 text-teal-800 text-xs px-3 py-1 rounded-full font-semibold">For language scholars</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section (Hidden Initially) -->
+        <section id="quiz-section" class="hidden">
+            <div class="flex justify-between items-center mb-8">
+                <button onclick="backToLevels()" class="back-button flex items-center text-teal-700 font-semibold hover:text-teal-900">
+                    ← Back to Levels
+                </button>
+                <div class="flex items-center space-x-4">
+                    <span id="timer" class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">
+                        ⏱️ <span id="time">45</span>s
+                    </span>
+                    <span id="question-value" class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium">
+                        💎 <span id="points-value">25</span> points
+                    </span>
+                </div>
+            </div>
+            
+            <div class="text-center mb-12">
+                <h2 id="level-title" class="text-4xl font-bold text-teal-900 mb-4">Expert Level Challenge</h2>
+                <div class="relative w-full bg-teal-200 rounded-full h-3 mb-2">
+                    <div id="progress-bar" class="bg-teal-600 h-3 rounded-full" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-teal-800 font-medium">
+                    <span>0%</span>
+                    <span id="progress-percent">0%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+            
+            <div id="question-container" class="bg-white rounded-xl shadow-xl p-8 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <span id="difficulty" class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-medium">Difficulty: ★★★★★</span>
+                    <span id="category" class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">Grammar</span>
+                </div>
+                <h3 id="question-text" class="text-2xl font-semibold mb-8 text-center"></h3>
+                <div id="answers" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+                <p id="progress" class="text-lg text-gray-700"></p>
+                <button id="next-button" class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg shadow-md transform hover:scale-105 transition-transform hidden">
+                    Next Challenge →
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="container mx-auto text-center">
+            <p class="mb-2">© 2025 HappyTalk Expert Level. All rights reserved.</p>
+            <p class="text-gray-400 text-sm">Designed for English language scholars and experts</p>
+        </div>
+    </footer>
+
+    <script>
+        // Streak and Points Logic
+        let streak = localStorage.getItem('streak') ? parseInt(localStorage.getItem('streak')) : 0;
+        let points = localStorage.getItem('points') ? parseInt(localStorage.getItem('points')) : 0;
+        document.getElementById('streak').textContent = `🔥 Streak: ${streak}`;
+        document.getElementById('points').textContent = `💎 Points: ${points}`;
+
+        const today = new Date().toDateString();
+        const lastVisit = localStorage.getItem('lastVisit');
+        if (lastVisit !== today) {
+            if (lastVisit) {
+                const lastDate = new Date(lastVisit);
+                const currentDate = new Date(today);
+                const diffDays = (currentDate - lastDate) / (1000 * 60 * 60 * 24);
+                if (diffDays === 1) {
+                    streak += 1;
+                } else if (diffDays > 1) {
+                    streak = 1;
+                }
+            } else {
+                streak = 1;
+            }
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastVisit', today);
+            document.getElementById('streak').textContent = `🔥 Streak: ${streak}`;
+        }
+
+        // Timer variables
+        let timer;
+        let timeLeft = 45;
+
+        // Questions for level 7 (35 expert questions)
+        const level7Questions = [
+            {
+                question: "Which sentence demonstrates the correct use of a quadruple negative in dialectal English?",
+                answers: [
+                    "I don't never have no problems with nobody",
+                    "I don't have no problems with nobody never",
+                    "I never don't have no problems with nobody",
+                    "All are dialectally possible but nonstandard"
+                ],
+                correct: "All are dialectally possible but nonstandard",
+                difficulty: 5,
+                category: "Dialects"
+            },
+            {
+                question: "Identify the correct use of the past perfect progressive subjunctive in a counterfactual conditional:",
+                answers: [
+                    "If I had been knowing the answer, I would have said it",
+                    "If I had been knowing the answer, I would say it",
+                    "If I would have been knowing the answer, I would have said it",
+                    "None are grammatically standard"
+                ],
+                correct: "None are grammatically standard",
+                difficulty: 5,
+                category: "Verb Tenses"
+            },
+            {
+                question: "Which sentence properly uses a postpositive adjective with a definite article?",
+                answers: [
+                    "The available options were limited",
+                    "The options available were limited",
+                    "The options were available limited",
+                    "Both first and second options are correct"
+                ],
+                correct: "Both first and second options are correct",
+                difficulty: 4,
+                category: "Syntax"
+            },
+            {
+                question: "Choose the correct sentence with a fronted negative adverbial requiring subject-auxiliary inversion:",
+                answers: [
+                    "Never I have seen such beauty",
+                    "Never have I seen such beauty",
+                    "Never I seen have such beauty",
+                    "Never seen I have such beauty"
+                ],
+                correct: "Never have I seen such beauty",
+                difficulty: 4,
+                category: "Syntax"
+            },
+            {
+                question: "Which sentence demonstrates proper use of the mandative subjunctive in formal writing?",
+                answers: [
+                    "It's essential that he goes immediately",
+                    "It's essential that he go immediately",
+                    "It's essential that he should go immediately",
+                    "Both second and third options are correct"
+                ],
+                correct: "Both second and third options are correct",
+                difficulty: 5,
+                category: "Subjunctive"
+            },
+            {
+                question: "Identify the correct use of 'whom' in an interrogative clause with a stranded preposition:",
+                answers: [
+                    "Whom did you give the book to?",
+                    "To whom did you give the book?",
+                    "Who did you give the book to?",
+                    "All are grammatically correct"
+                ],
+                correct: "All are grammatically correct",
+                difficulty: 4,
+                category: "Pronouns"
+            },
+            {
+                question: "Which sentence properly uses a zero-relative clause in an existential construction?",
+                answers: [
+                    "There's a man Ø wants to see you",
+                    "There's a man that wants to see you",
+                    "There's a man who wants to see you",
+                    "All are grammatically correct"
+                ],
+                correct: "All are grammatically correct",
+                difficulty: 5,
+                category: "Relative Clauses"
+            },
+            {
+                question: "Choose the correct sentence with a fronted preposition in a relative clause:",
+                answers: [
+                    "This is the book about which I told you",
+                    "This is the book which I told you about",
+                    "This is the book I told you about",
+                    "All are grammatically correct"
+                ],
+                correct: "All are grammatically correct",
+                difficulty: 4,
+                category: "Prepositions"
+            },
+            {
+                question: "Which sentence demonstrates proper use of the historical present in narrative discourse?",
+                answers: [
+                    "So yesterday I'm walking down the street when suddenly I see this dog",
+                    "So yesterday I was walking down the street when suddenly I saw this dog",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 3,
+                category: "Verb Tenses"
+            },
+            {
+                question: "Identify the correct use of singular 'they' in formal writing:",
+                answers: [
+                    "Someone left their umbrella here",
+                    "Someone left his or her umbrella here",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 3,
+                category: "Pronouns"
+            },
+            {
+                question: "Which sentence properly uses an absolute construction with a present participle?",
+                answers: [
+                    "The weather being nice, we decided to picnic",
+                    "Because the weather was nice, we decided to picnic",
+                    "The weather was nice, we decided to picnic",
+                    "All are grammatically correct"
+                ],
+                correct: "The weather being nice, we decided to picnic",
+                difficulty: 5,
+                category: "Participles"
+            },
+            {
+                question: "Choose the correct sentence with a discontinuous modifier in a noun phrase:",
+                answers: [
+                    "A better car than this doesn't exist",
+                    "A car better than this doesn't exist",
+                    "A better than this car doesn't exist",
+                    "Both first and second options are correct"
+                ],
+                correct: "Both first and second options are correct",
+                difficulty: 5,
+                category: "Syntax"
+            },
+            {
+                question: "Which sentence demonstrates proper use of a resumptive pronoun in relative clause?",
+                answers: [
+                    "My sister, she lives in Canada",
+                    "My sister lives in Canada",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 4,
+                category: "Pronouns"
+            },
+            {
+                question: "Identify the correct use of 'as' in a comparative correlative construction:",
+                answers: [
+                    "She's as tall if not taller than her sister",
+                    "She's as tall as, if not taller than, her sister",
+                    "She's as tall as if not taller than her sister",
+                    "All are grammatically correct"
+                ],
+                correct: "She's as tall as, if not taller than, her sister",
+                difficulty: 4,
+                category: "Comparatives"
+            },
+            {
+                question: "Which sentence properly uses a pro-verb 'do' in ellipsis:",
+                answers: [
+                    "She plays tennis better than he does",
+                    "She plays tennis better than he plays",
+                    "She plays tennis better than him",
+                    "All are grammatically correct"
+                ],
+                correct: "All are grammatically correct",
+                difficulty: 3,
+                category: "Verb Forms"
+            },
+            {
+                question: "Choose the correct sentence with negative concord in African American Vernacular English:",
+                answers: [
+                    "I don't have no problems with nobody",
+                    "I don't have any problems with anybody",
+                    "I ain't got no problems with nobody",
+                    "None are standard English"
+                ],
+                correct: "I ain't got no problems with nobody",
+                difficulty: 5,
+                category: "Dialects"
+            },
+            {
+                question: "Which sentence demonstrates proper use of a gerund-participle after a verb of perception:",
+                answers: [
+                    "I saw him crossing the street",
+                    "I saw him cross the street",
+                    "Both are grammatically correct with different meanings",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct with different meanings",
+                difficulty: 5,
+                category: "Verb Forms"
+            },
+            {
+                question: "Identify the correct use of 'may' vs 'might' in past reported speech:",
+                answers: [
+                    "I thought it may rain yesterday",
+                    "I thought it might rain yesterday",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "I thought it might rain yesterday",
+                difficulty: 4,
+                category: "Modals"
+            },
+            {
+                question: "Which sentence properly uses a pseudo-cleft construction for focus:",
+                answers: [
+                    "What I need is a good vacation",
+                    "A good vacation is what I need",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 4,
+                category: "Syntax"
+            },
+            {
+                question: "Choose the correct sentence with a stranded preposition in a wh-question:",
+                answers: [
+                    "What are you talking about?",
+                    "About what are you talking?",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 3,
+                category: "Prepositions"
+            },
+            {
+                question: "Which sentence demonstrates proper use of the passive with 'get' in informal speech:",
+                answers: [
+                    "He got promoted last week",
+                    "He was promoted last week",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 3,
+                category: "Passive Voice"
+            },
+            {
+                question: "Identify the correct use of 'shall' vs 'will' for future reference in legal documents:",
+                answers: [
+                    "The tenant shall pay rent on the first of each month",
+                    "The tenant will pay rent on the first of each month",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "The tenant shall pay rent on the first of each month",
+                difficulty: 5,
+                category: "Modals"
+            },
+            {
+                question: "Which sentence properly uses a catenative verb chain with perfect aspect:",
+                answers: [
+                    "She seems to have been being followed",
+                    "She seems to have been followed",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 5,
+                category: "Verb Forms"
+            },
+            {
+                question: "Choose the correct sentence with a fronted negative adverbial requiring subject-aux inversion:",
+                answers: [
+                    "Under no circumstances I will agree",
+                    "Under no circumstances will I agree",
+                    "Under no circumstances I would agree",
+                    "Under no circumstances would I agree"
+                ],
+                correct: "Under no circumstances will I agree",
+                difficulty: 4,
+                category: "Syntax"
+            },
+            {
+                question: "Which sentence demonstrates proper use of the subjunctive in a that-clause after 'demand':",
+                answers: [
+                    "I demand that he be on time",
+                    "I demand that he is on time",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "I demand that he be on time",
+                difficulty: 5,
+                category: "Subjunctive"
+            },
+            {
+                question: "Identify the correct use of 'dare' as a semi-modal verb in a question:",
+                answers: [
+                    "Dare he ask the question?",
+                    "Does he dare ask the question?",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 5,
+                category: "Modals"
+            },
+            {
+                question: "Which sentence properly uses a comparative correlative construction:",
+                answers: [
+                    "The more you study, the more you learn",
+                    "More you study, more you learn",
+                    "The more you study, you learn more",
+                    "All are grammatically correct"
+                ],
+                correct: "The more you study, the more you learn",
+                difficulty: 3,
+                category: "Comparatives"
+            },
+            {
+                question: "Choose the correct sentence with an expletive 'there' construction with a quantifier:",
+                answers: [
+                    "There appear to be several problems",
+                    "There appears to be several problems",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "There appear to be several problems",
+                difficulty: 4,
+                category: "Syntax"
+            },
+            {
+                question: "Which sentence demonstrates proper use of 'need' as a semi-modal verb in negative:",
+                answers: [
+                    "He need not worry about it",
+                    "He needs not to worry about it",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "He need not worry about it",
+                difficulty: 4,
+                category: "Modals"
+            },
+            {
+                question: "Identify the correct use of 'used to' vs 'would' for past habits with stative verbs:",
+                answers: [
+                    "When I was young, I would live in London",
+                    "When I was young, I used to live in London",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "When I was young, I used to live in London",
+                difficulty: 4,
+                category: "Verb Tenses"
+            },
+            {
+                question: "Which sentence properly uses a non-restrictive relative clause with 'which':",
+                answers: [
+                    "The book, which I lent you, was expensive",
+                    "The book which I lent you was expensive",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "The book, which I lent you, was expensive",
+                difficulty: 3,
+                category: "Relative Clauses"
+            },
+            {
+                question: "Choose the correct sentence with a reduced relative clause:",
+                answers: [
+                    "The man Ø standing there is my uncle",
+                    "The man who is standing there is my uncle",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 4,
+                category: "Relative Clauses"
+            },
+            {
+                question: "Which sentence demonstrates proper use of 'as' versus 'like' for comparison:",
+                answers: [
+                    "She works like a teacher does",
+                    "She works as a teacher",
+                    "She works like a teacher",
+                    "All are grammatically correct with different meanings"
+                ],
+                correct: "All are grammatically correct with different meanings",
+                difficulty: 5,
+                category: "Comparisons"
+            },
+            {
+                question: "Identify the correct use of 'whose' with inanimate objects in formal writing:",
+                answers: [
+                    "The house whose roof was damaged is being repaired",
+                    "The house of which the roof was damaged is being repaired",
+                    "Both are grammatically correct",
+                    "Neither is grammatically correct"
+                ],
+                correct: "Both are grammatically correct",
+                difficulty: 5,
+                category: "Relative Clauses"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let currentLevel = 7;
+        let currentQuestions = [];
+
+        function startLevel(level) {
+            currentLevel = level;
+            currentQuestions = level7Questions;
+            
+            document.getElementById('levels-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.remove('hidden');
+            document.getElementById('level-title').textContent = `Expert Level Challenge`;
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            updateProgressBar();
+            startTimer();
+            showQuestion();
+        }
+
+        function backToLevels() {
+            if (confirm("Are you sure you want to go back? Your progress will be lost.")) {
+                clearInterval(timer);
+                document.getElementById('levels-section').classList.remove('hidden');
+                document.getElementById('quiz-section').classList.add('hidden');
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = (currentQuestionIndex / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-percent').textContent = `${Math.round(progress)}%`;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 45;
+            document.getElementById('time').textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            const buttons = document.querySelectorAll('.answer-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === currentQuestions[currentQuestionIndex].correct) {
+                    button.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('next-button').classList.remove('hidden');
+        }
+
+        function showQuestion() {
+            clearInterval(timer);
+            startTimer();
+            
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Set difficulty stars
+            const difficultyStars = '★'.repeat(question.difficulty) + '☆'.repeat(5 - question.difficulty);
+            document.getElementById('difficulty').textContent = `Difficulty: ${difficultyStars}`;
+            
+            // Set category
+            document.getElementById('category').textContent = question.category;
+            
+            // Set question value
+            const questionValue = question.difficulty * 5;
+            document.getElementById('points-value').textContent = questionValue;
+            
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            
+            // Shuffle answers
+            const shuffledAnswers = [...question.answers].sort(() => Math.random() - 0.5);
+            
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.className = 'answer-button bg-white hover:bg-teal-50 text-teal-900 px-6 py-4 rounded-lg border border-teal-200 text-left transition-colors duration-200';
+                button.textContent = answer;
+                button.onclick = () => {
+                    clearInterval(timer);
+                    button.classList.add('selected');
+                    checkAnswer(answer, question.correct);
+                };
+                answersDiv.appendChild(button);
+            });
+            
+            document.getElementById('progress').textContent = `Challenge ${currentQuestionIndex + 1} of ${currentQuestions.length}`;
+            document.getElementById('next-button').classList.add('hidden');
+            updateProgressBar();
+        }
+
+        function checkAnswer(selected, correct) {
+            const buttons = document.querySelectorAll('.answer-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correct) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selected && selected !== correct) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            if (selected === correct) {
+                correctAnswers++;
+                const currentDifficulty = currentQuestions[currentQuestionIndex].difficulty;
+                points += currentDifficulty * 5;
+                localStorage.setItem('points', points);
+                document.getElementById('points').textContent = `💎 Points: ${points}`;
+            }
+            
+            document.getElementById('next-button').classList.remove('hidden');
+        }
+
+        document.getElementById('next-button').onclick = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                clearInterval(timer);
+                const percentage = Math.round((correctAnswers / currentQuestions.length) * 100);
+                let message, medal;
+                
+                if (percentage >= 90) {
+                    message = "🏆 Legendary Performance! You're an English Scholar!";
+                    medal = "🎖️ Scholar's Medal";
+                } else if (percentage >= 75) {
+                    message = "🌟 Exceptional Mastery! You're a Language Expert!";
+                    medal = "🏅 Expert's Badge";
+                } else if (percentage >= 50) {
+                    message = "👍 Impressive Knowledge! You're Nearing Mastery!";
+                    medal = "📜 Advanced Diploma";
+                } else {
+                    message = "💪 Keep Studying! True Mastery Takes Time!";
+                    medal = "📚 Study Guide";
+                }
+
+                document.getElementById('question-container').innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center text-5xl text-white font-bold shadow-lg">
+                            ${percentage}%
+                        </div>
+                        <h3 class="text-3xl font-bold text-teal-800 mb-4">Expert Challenge Completed!</h3>
+                        <p class="text-xl mb-6">${message}</p>
+                        <div class="inline-block bg-amber-100 text-amber-800 px-4 py-2 rounded-full font-medium mb-6">
+                            ${medal}
+                        </div>
+                        <p class="text-lg text-gray-700 mb-8">You answered ${correctAnswers} out of ${currentQuestions.length} challenges correctly.</p>
+                        <div class="flex flex-col sm:flex-row justify-center gap-4">
+                            <button class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg shadow-md transform hover:scale-105 transition-transform"
+                                onclick="restart()">
+                                Back to Levels
+                            </button>
+                            <button class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-lg shadow-md transform hover:scale-105 transition-transform"
+                                onclick="startLevel(7)">
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('progress').textContent = '';
+                document.getElementById('next-button').classList.add('hidden');
+            }
+        };
+
+        function restart() {
+            document.getElementById('levels-section').classList.remove('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
